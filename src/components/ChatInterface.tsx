@@ -56,10 +56,8 @@ const ChatInterface: React.FC = () => {
       fileObject = await createFileObject(selectedFile);
     }
 
-    const userMessage = createUserMessage(
-      inputMessage.trim() || (selectedFile ? `Sent a file: ${selectedFile.name}` : ''),
-      fileObject
-    );
+    const messageContent = inputMessage.trim() || (selectedFile ? `Sent a file: ${selectedFile.name}` : '');
+    const userMessage = createUserMessage(messageContent, fileObject);
     
     setMessages((prev) => [...prev, userMessage]);
     setInputMessage('');
@@ -71,7 +69,7 @@ const ChatInterface: React.FC = () => {
       setMessages((prev) => [...prev, typingMessage]);
 
       // Send message to n8n webhook
-      const response = await sendMessageToN8N(inputMessage, selectedFile);
+      const response = await sendMessageToN8N(messageContent, selectedFile);
       
       // Remove typing indicator and add actual response
       setMessages((prev) => {
@@ -81,7 +79,8 @@ const ChatInterface: React.FC = () => {
     } catch (error) {
       console.error('Error sending message:', error);
       setMessages((prev) => {
-        const filtered = prev.filter(msg => msg.content === '...');
+        // Remove typing indicator
+        const filtered = prev.filter(msg => msg.id !== prev[prev.length - 1].id);
         return [...filtered, createBotMessage('عذراً، حدث خطأ أثناء معالجة طلبك.')];
       });
     } finally {

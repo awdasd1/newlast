@@ -15,20 +15,39 @@ export const sendMessageToN8N = async (message: string, file?: File): Promise<st
       formData.append('file', file);
     }
 
+    console.log('Sending request to:', webhookUrl);
+    
     const response = await fetch(webhookUrl, {
       method: 'POST',
       body: formData,
     });
 
     if (!response.ok) {
+      console.error('N8N response not OK:', response.status, response.statusText);
       throw new Error(`Error: ${response.status}`);
     }
 
     const data = await response.json();
-    return data.response || 'Sorry, I couldn\'t process your request.';
+    console.log('N8N response data:', data);
+    
+    // Check different possible response formats
+    if (data.response) {
+      return data.response;
+    } else if (data.message) {
+      return data.message;
+    } else if (data.result) {
+      return data.result;
+    } else if (typeof data === 'string') {
+      return data;
+    } else if (typeof data === 'object') {
+      // If it's an object but doesn't have expected fields, stringify it
+      return JSON.stringify(data);
+    }
+    
+    return 'Sorry, I couldn\'t process your request.';
   } catch (error) {
     console.error('Error sending message to n8n:', error);
-    return 'Sorry, there was an error connecting to the service.';
+    return 'عذراً، حدث خطأ أثناء الاتصال بالخدمة. يرجى المحاولة مرة أخرى.';
   }
 };
 
