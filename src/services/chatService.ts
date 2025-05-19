@@ -27,21 +27,46 @@ export const sendMessageToN8N = async (message: string, file?: File): Promise<st
       throw new Error(`Error: ${response.status}`);
     }
 
-    const data = await response.json();
-    console.log('N8N response data:', data);
+    // Get response as text first to inspect it
+    const responseText = await response.text();
+    console.log('Raw N8N response:', responseText);
     
-    // Check different possible response formats
-    if (data.response) {
-      return data.response;
-    } else if (data.message) {
-      return data.message;
-    } else if (data.result) {
-      return data.result;
-    } else if (typeof data === 'string') {
-      return data;
-    } else if (typeof data === 'object') {
-      // If it's an object but doesn't have expected fields, stringify it
-      return JSON.stringify(data);
+    // Check if response starts with {"output":"
+    if (responseText.startsWith('{"output":"')) {
+      // Extract the content between {"output":" and the last "}
+      let cleanedResponse = responseText.substring(11, responseText.length - 2);
+      
+      // Replace escaped quotes and newlines if present
+      cleanedResponse = cleanedResponse.replace(/\\"/g, '"').replace(/\\n/g, '\n');
+      
+      console.log('Cleaned response:', cleanedResponse);
+      return cleanedResponse;
+    }
+    
+    // If it doesn't match the pattern, try to parse it as JSON
+    try {
+      const data = JSON.parse(responseText);
+      console.log('Parsed JSON data:', data);
+      
+      // Check different possible response formats
+      if (data.output) {
+        return data.output;
+      } else if (data.response) {
+        return data.response;
+      } else if (data.message) {
+        return data.message;
+      } else if (data.result) {
+        return data.result;
+      } else if (typeof data === 'string') {
+        return data;
+      } else if (typeof data === 'object') {
+        // If it's an object but doesn't have expected fields, stringify it
+        return JSON.stringify(data);
+      }
+    } catch (e) {
+      // If it's not valid JSON, return the raw text
+      console.log('Not valid JSON, returning raw text');
+      return responseText;
     }
     
     return 'Sorry, I couldn\'t process your request.';
