@@ -33,3 +33,40 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #a0a0a0;
 }
+
+/* RTL specific adjustments */
+[dir="rtl"] .flex-row {
+  flex-direction: row;
+}
+
+[dir="rtl"] .flex-row-reverse {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .mr-2 {
+  margin-left: 0.5rem;
+  margin-right: 0;
+}
+
+[dir="rtl"] .ml-2 {
+  margin-right: 0.5rem;
+  margin-left: 0;
+}
+
+[dir="rtl"] .mr-3 {
+  margin-left: 0.75rem;
+  margin-right: 0;
+}
+
+[dir="rtl"] .ml-3 {
+  margin-right: 0.75rem;
+  margin-left: 0;
+}
+
+[dir="rtl"] .text-right {
+  text-align: left;
+}
+
+[dir="rtl"] .text-left {
+  text-align: right;
+}

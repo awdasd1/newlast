@@ -90,11 +90,11 @@ const ChatInterface: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-gray-50" dir="rtl">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center shadow-sm">
         <div className="flex items-center">
-          <div className="bg-indigo-600 p-2 rounded-full mr-3">
+          <div className="bg-indigo-600 p-2 rounded-full ml-3">
             <Bot size={20} className="text-white" />
           </div>
           <h1 className="text-xl font-semibold text-gray-800">N8N Assistant</h1>
@@ -103,7 +103,7 @@ const ChatInterface: React.FC = () => {
           onClick={logout}
           className="flex items-center text-gray-600 hover:text-indigo-600 transition-colors"
         >
-          <span className="mr-2">تسجيل الخروج</span>
+          <span className="ml-2">تسجيل الخروج</span>
           <LogOut size={18} />
         </button>
       </header>
@@ -122,26 +122,10 @@ const ChatInterface: React.FC = () => {
       <div className="bg-white border-t border-gray-200 p-4">
         <form onSubmit={handleSendMessage} className="max-w-3xl mx-auto">
           <div className="flex items-center bg-gray-100 rounded-full px-4 py-2">
-            <FileUploadButton 
-              onFileSelect={handleFileSelect} 
-              selectedFile={selectedFile}
-              onClearFile={clearSelectedFile}
-            />
-            
-            <input
-              type="text"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              placeholder="اكتب رسالتك هنا..."
-              className="flex-1 bg-transparent outline-none py-2 px-3 text-right"
-              disabled={isLoading}
-              dir="rtl"
-            />
-            
             <button
               type="submit"
               disabled={isLoading || (!inputMessage.trim() && !selectedFile)}
-              className={`ml-2 p-2 rounded-full ${
+              className={`mr-2 p-2 rounded-full ${
                 isLoading || (!inputMessage.trim() && !selectedFile)
                   ? 'bg-gray-300 text-gray-500'
                   : 'bg-indigo-600 text-white hover:bg-indigo-700'
@@ -149,6 +133,21 @@ const ChatInterface: React.FC = () => {
             >
               <Send size={20} />
             </button>
+            
+            <input
+              type="text"
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              placeholder="اكتب رسالتك هنا..."
+              className="flex-1 bg-transparent outline-none py-2 px-3"
+              disabled={isLoading}
+            />
+            
+            <FileUploadButton 
+              onFileSelect={handleFileSelect} 
+              selectedFile={selectedFile}
+              onClearFile={clearSelectedFile}
+            />
           </div>
         </form>
       </div>

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import { Paperclip, X } from 'lucide-react';
 
 interface FileUploadButtonProps {
@@ -7,13 +7,12 @@ interface FileUploadButtonProps {
   onClearFile: () => void;
 }
 
-const FileUploadButton: React.FC<FileUploadButtonProps> = ({ 
-  onFileSelect, 
+const FileUploadButton: React.FC<FileUploadButtonProps> = ({
+  onFileSelect,
   selectedFile,
   onClearFile
 }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -21,40 +20,12 @@ const FileUploadButton: React.FC<FileUploadButtonProps> = ({
     }
   };
 
-  const handleClick = () => {
+  const handleButtonClick = () => {
     fileInputRef.current?.click();
   };
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      onFileSelect(e.dataTransfer.files[0]);
-    }
-  };
-
-  const getFileSize = (size: number) => {
-    if (size < 1024) {
-      return `${size} B`;
-    } else if (size < 1024 * 1024) {
-      return `${(size / 1024).toFixed(1)} KB`;
-    } else {
-      return `${(size / (1024 * 1024)).toFixed(1)} MB`;
-    }
-  };
-
   return (
-    <div>
+    <div className="relative">
       <input
         type="file"
         ref={fileInputRef}
@@ -63,32 +34,27 @@ const FileUploadButton: React.FC<FileUploadButtonProps> = ({
         accept="image/*,.pdf,.doc,.docx,.txt"
       />
       
-      {!selectedFile ? (
-        <div
-          onClick={handleClick}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          className={`cursor-pointer p-2 rounded-full hover:bg-gray-200 transition-colors ${
-            isDragging ? 'bg-gray-200' : ''
-          }`}
-          title="Attach a file"
-        >
-          <Paperclip size={20} className="text-gray-600" />
-        </div>
-      ) : (
-        <div className="flex items-center bg-indigo-100 rounded-full px-3 py-1 mr-2">
-          <span className="text-xs text-indigo-800 mr-1 max-w-[100px] truncate">
-            {selectedFile.name} ({getFileSize(selectedFile.size)})
+      {selectedFile ? (
+        <div className="flex items-center bg-indigo-100 rounded-full px-3 py-1 ml-2">
+          <span className="text-xs text-indigo-800 truncate max-w-[100px]">
+            {selectedFile.name}
           </span>
           <button
+            type="button"
             onClick={onClearFile}
-            className="text-indigo-600 hover:text-indigo-800"
-            title="Remove file"
+            className="ml-1 text-indigo-600 hover:text-indigo-800"
           >
             <X size={16} />
           </button>
         </div>
+      ) : (
+        <button
+          type="button"
+          onClick={handleButtonClick}
+          className="text-gray-500 hover:text-indigo-600 transition-colors"
+        >
+          <Paperclip size={20} />
+        </button>
       )}
     </div>
   );
